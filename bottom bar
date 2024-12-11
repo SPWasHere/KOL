@@ -1,0 +1,27 @@
+# bottom_bar.gd
+extends MarginContainer
+
+# Signals for modals
+signal open_feed_modal
+signal open_goals_modal
+
+# Button references
+@onready var feed_button = $PanelContainer/HBoxContainer/FeedButton
+@onready var clothing_button = $PanelContainer/HBoxContainer/ClothingButton
+@onready var goals_button = $PanelContainer/HBoxContainer/GoalsButton
+
+func _ready():
+	# Connect button signals
+	feed_button.pressed.connect(_on_feed_pressed)
+	clothing_button.pressed.connect(_on_clothing_pressed)
+	goals_button.pressed.connect(_on_goals_pressed)
+
+func _on_feed_pressed():
+	emit_signal("open_feed_modal")
+
+func _on_clothing_pressed():
+	# Change to clothing scene
+	get_tree().change_scene_to_file("res://scenes/clothing.tscn")
+
+func _on_goals_pressed():
+	emit_signal("open_goals_modal")
