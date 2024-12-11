@@ -1,24 +1,28 @@
 extends PopupPanel
 
-@onready var feed_content = $ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
-@onready var close_button = $MarginContainer/HBoxContainerFM/CloseButton
+@onready var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
+@onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/Control/CloseButton
 
 func _ready():
 	# Ensure popup is configured correctly
 	self.set_exclusive(true)
 	self.position = Vector2(560, 200)
 	self.size = Vector2(450, 300)
-
+	
 	# Style the panel
 	apply_panel_style()
-
+	
 	# Connect close button
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)
-
+	else:
+		print("Close button not found at path: VBoxContainer/MarginContainer/HBoxContainerFM/Control/CloseButton")
+	
 	# Populate initial feed
-	setup_feed_container()
-	add_new_update("Welcome to the feed!", 100)
+	if feed_content:
+		setup_feed_container()
+	else:
+		print("Feed content not found at path: VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/FeedContent")
 
 func apply_panel_style():
 	var style = StyleBoxFlat.new()
@@ -27,50 +31,72 @@ func apply_panel_style():
 	style.corner_radius_top_right = 24
 	style.corner_radius_bottom_left = 24
 	style.corner_radius_bottom_right = 24
-	style.shadow_size = 4
-	style.shadow_color = Color(0, 0, 0, 0.25)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = Color.hex(0x202020FF)  # The border color you specified
+   
 	self.add_theme_stylebox_override("panel", style)
 
 func setup_feed_container():
-	if not feed_content:
-		print("Error: FeedContent node not found!")
-		return
+	var panel = PanelContainer.new()
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(1, 1, 1, 1)  # White
+	panel_style.corner_radius_top_left = 15
+	panel_style.corner_radius_top_right = 15
+	panel_style.corner_radius_bottom_left = 15
+	panel_style.corner_radius_bottom_right = 15
+	panel_style.border_width_left = 2
+	panel_style.border_width_top = 2
+	panel_style.border_width_right = 2
+	panel_style.border_width_bottom = 2
+	panel_style.border_color = Color.hex(0x202020FF)
+	panel_style.content_margin_left = 15
+	panel_style.content_margin_right = 15
+	panel_style.content_margin_top = 10
+	panel_style.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", panel_style)
 
-	# Clear previous feed content
-	for child in feed_content.get_children():
-		child.queue_free()
+	# Create a VBoxContainer for feed items
+	var feed_container = VBoxContainer.new()
+	feed_container.add_theme_constant_override("separation", 10)
+	panel.add_child(feed_container)
 
-	# Initialize with an example feed update
+	# Add initial feed update
 	add_new_update("Feed Initialized Successfully!", 0)
 
+	# Add panel to the feed content
+	feed_content.add_child(panel)
+
 func add_new_update(message: String, follower_change: int):
-	if not feed_content:
-		print("Error: Cannot update feed. FeedContent not found!")
+	if not feed_content or feed_content.get_child_count() == 0:
+		print("Feed content container not ready!")
 		return
-
+		
+	var panel = feed_content.get_child(0)  # Get the white background panel
+	var feed_container = panel.get_child(0)  # Get the VBoxContainer for feed items
+	
+	# Create feed item container
 	var feed_item = HBoxContainer.new()
-
-	# Add icon (e.g., avatar)
-	var icon = TextureRect.new()
-	icon.texture = load("res://assets/avatar_placeholder.png")  # Replace with your asset
-	icon.rect_min_size = Vector2(48, 48)
-	feed_item.add_child(icon)
-
-	# Add message label
+	feed_item.add_theme_constant_override("separation", 10)
+	
+	# Add message
 	var message_label = Label.new()
-	message_label.text = message
-	message_label.add_theme_color_override("font_color", Color(1, 1, 1))  # White font
+	message_label.text = "[b]Feed Update![/b]\n" + message
+	message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	feed_item.add_child(message_label)
-
-	# Add follower change label
+	
+	# Add follower change
 	var follower_label = Label.new()
 	var color = Color(0, 1, 0) if follower_change >= 0 else Color(1, 0, 0)
 	follower_label.text = str(follower_change) + " fans"
 	follower_label.add_theme_color_override("font_color", color)
 	feed_item.add_child(follower_label)
-
-	# Add to feed content
-	feed_content.add_child(feed_item)
+	
+	# Add to feed container
+	feed_container.add_child(feed_item)
 
 func _on_close_button_pressed():
 	self.hide()
