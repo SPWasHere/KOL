@@ -5,6 +5,9 @@ extends Node
 @onready var popup_panel = $CanvasLayer/Control3/PopupPanel
 @onready var feed_modal = $CanvasLayer/Control4/PopupPanel
 
+# Track which modal is open
+var current_open_modal: PopupPanel = null
+
 func _ready():
 	print("ModalOverlay found: ", has_node("CanvasLayer/Control3"))
 	print("PopupPanel found: ", has_node("CanvasLayer/Control3/PopupPanel"))
@@ -15,16 +18,30 @@ func _ready():
 
 func _on_open_feed_modal():
 	print("Feed modal requested")
-	if feed_modal:
-		feed_modal.show()
-		feed_modal.add_new_update("This is a new update message!", -1000)
+	if current_open_modal == feed_modal:
+		# If feed is already open, close it
+		feed_modal.hide()
+		current_open_modal = null
 	else:
-		print("Feed modal not found!")
+		# If another modal is open, close it first
+		if current_open_modal:
+			current_open_modal.hide()
+		# Show feed modal
+		feed_modal.show()
+		feed_modal.add_new_update("res://assets/SMOLLting.jpg", "I am ZekeXBT and I sense crime.. Thread soon", -375000)
+		current_open_modal = feed_modal
 
 func _on_open_goals_modal():
 	print("Goals modal requested")
-	if popup_panel:
+	if current_open_modal == popup_panel:
+		# If goals is already open, close it
+		popup_panel.hide()
+		current_open_modal = null
+	else:
+		# If another modal is open, close it first
+		if current_open_modal:
+			current_open_modal.hide()
+		# Show goals modal
 		popup_panel.popup()
 		print("Showing popup")
-	else:
-		print("Cannot show popup - reference not found")
+		current_open_modal = popup_panel
