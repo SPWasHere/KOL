@@ -1,0 +1,104 @@
+extends PopupPanel
+
+@onready var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer
+@onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
+
+func _ready():
+	# Enforce modal size through VBoxContainer
+	$VBoxContainer.custom_minimum_size = Vector2(450, 300)  # Fixed modal size
+	self.position = Vector2(560, 200)  # Center position
+
+	# Style the panel
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.2, 0.2, 0.2)  # Dark gray
+	style.corner_radius_top_left = 24
+	style.corner_radius_top_right = 24
+	style.corner_radius_bottom_left = 24
+	style.corner_radius_bottom_right = 24
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = Color.hex(0x202020FF)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 16
+	style.content_margin_bottom = 16
+	add_theme_stylebox_override("panel", style)
+
+	# Connect close button
+	if close_button:
+		close_button.pressed.connect(_on_close_button_pressed)
+
+	# Add initial feed item
+	add_new_update("res://assets/avatar_placeholder.jpg", "I am ZekeXBT and I sense crime.. Thread soon", -375000)
+
+func _on_close_button_pressed():
+	hide()
+
+func add_new_update(avatar_path: String, message: String, follower_change: int):
+	if not feed_content:
+		print("Feed content not found!")
+		return
+
+	# Create the white card background
+	var card = PanelContainer.new()
+	var card_style = StyleBoxFlat.new()
+	card_style.bg_color = Color(1, 1, 1, 1)  # White
+	card_style.corner_radius_top_left = 15
+	card_style.corner_radius_top_right = 15
+	card_style.corner_radius_bottom_left = 15
+	card_style.corner_radius_bottom_right = 15
+	card_style.content_margin_left = 15
+	card_style.content_margin_right = 15
+	card_style.content_margin_top = 15
+	card_style.content_margin_bottom = 15
+	card.add_theme_stylebox_override("panel", card_style)
+
+	# Create an HBoxContainer for avatar and content
+	var content_box = HBoxContainer.new()
+	content_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Add avatar within a fixed-size container
+	var avatar_wrapper = Control.new()
+	avatar_wrapper.custom_minimum_size = Vector2(64, 64)  # Fixed wrapper size
+	avatar_wrapper.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var avatar = TextureRect.new()
+	avatar.texture = load(avatar_path)
+	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	avatar_wrapper.add_child(avatar)
+	content_box.add_child(avatar_wrapper)
+
+	# Create a VBoxContainer for the text content
+	var message_box = VBoxContainer.new()
+	message_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Title
+	var title_label = Label.new()
+	title_label.text = "Feed Update!"
+	title_label.add_theme_font_size_override("font_size", 16)
+	title_label.add_theme_color_override("font_color", Color(0, 0, 0))  # Black text
+	message_box.add_child(title_label)
+
+	# Message
+	var message_label = Label.new()
+	message_label.text = message
+	message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	message_label.add_theme_color_override("font_color", Color(0, 0, 0))  # Black text
+	message_box.add_child(message_label)
+
+	# Fans count
+	var fans_label = Label.new()
+	fans_label.text = str(follower_change) + " fans"
+	var color = Color(1, 0, 0) if follower_change < 0 else Color(0, 1, 0)
+	fans_label.add_theme_color_override("font_color", color)
+	message_box.add_child(fans_label)
+
+	# Add message_box to content_box
+	content_box.add_child(message_box)
+
+	# Add content_box to card
+	card.add_child(content_box)
+
+	# Add card to feed_content
+	feed_content.add_child(card)
