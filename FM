@@ -1,14 +1,14 @@
 extends PopupPanel
 
-@onready var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
-@onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
+@onready var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer
+@onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/Control/CloseButton
 
 func _ready():
 	# Basic popup setup
 	set_exclusive(true)
 	self.position = Vector2(560, 200)
 	self.size = Vector2(450, 300)
-	
+
 	# Style the panel
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.2, 0.2, 0.2)  # Dark gray
@@ -26,11 +26,11 @@ func _ready():
 	style.content_margin_top = 16
 	style.content_margin_bottom = 16
 	add_theme_stylebox_override("panel", style)
-	
+
 	# Connect close button
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)
-	
+
 	# Add initial feed item
 	add_new_update("@CdParker And did you see what her date was wearing? Barf. Literally. On myself... it was gross.", -375000)
 
@@ -41,48 +41,50 @@ func add_new_update(message: String, follower_change: int):
 	if not feed_content:
 		print("Feed content not found!")
 		return
-	
+
 	# Create the white card background
 	var card = PanelContainer.new()
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 	var card_style = StyleBoxFlat.new()
 	card_style.bg_color = Color(1, 1, 1, 1)  # White
 	card_style.corner_radius_top_left = 15
 	card_style.corner_radius_top_right = 15
 	card_style.corner_radius_bottom_left = 15
 	card_style.corner_radius_bottom_right = 15
-	card_style.content_margin_left = 20
-	card_style.content_margin_right = 20
-	card_style.content_margin_top = 15
-	card_style.content_margin_bottom = 15
+	card_style.content_margin_left = 15
+	card_style.content_margin_right = 15
+	card_style.content_margin_top = 10
+	card_style.content_margin_bottom = 10
 	card.add_theme_stylebox_override("panel", card_style)
-	
-	# Message container
-	var message_container = VBoxContainer.new()
-	message_container.custom_minimum_size = Vector2(350, 0)  # Set minimum width
-	message_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	message_container.add_theme_constant_override("separation", 10)
-	
-	# Add title "Feed Update!" in bold
+
+	# Single VBoxContainer for content
+	var content_box = VBoxContainer.new()
+	content_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Title
 	var title_label = Label.new()
 	title_label.text = "Feed Update!"
 	title_label.add_theme_font_size_override("font_size", 16)
-	title_label.add_theme_color_override("font_color", Color(0, 0, 0))  # Black text
-	message_container.add_child(title_label)
-	
-	# Add the message content
-	var content = Label.new()
-	content.text = message
-	content.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	content.add_theme_color_override("font_color", Color(0, 0, 0))  # Black text
-	message_container.add_child(content)
-	
-	# Add follower change at the bottom right
-	var follower_text = Label.new()
-	follower_text.text = str(follower_change) + " fans"
-	follower_text.add_theme_color_override("font_color", Color(1, 0, 0, 1))  # Red color
-	follower_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	message_container.add_child(follower_text)
-	
-	# Add everything together
-	card.add_child(message_container)
+	title_label.add_theme_color_override("font_color", Color(0, 0, 0))
+	content_box.add_child(title_label)
+
+	# Message
+	var message_label = Label.new()
+	message_label.text = message
+	message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	message_label.add_theme_color_override("font_color", Color(0, 0, 0))
+	content_box.add_child(message_label)
+
+	# Fans count
+	var fans_label = Label.new()
+	fans_label.text = str(follower_change) + " fans"
+	fans_label.add_theme_color_override("font_color", Color(1, 0, 0, 1))
+	fans_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fans_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	content_box.add_child(fans_label)
+
+	# Add to card
+	card.add_child(content_box)
 	feed_content.add_child(card)
