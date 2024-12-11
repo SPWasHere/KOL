@@ -1,7 +1,7 @@
 extends PopupPanel
 
 @onready var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
-@onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/Control/CloseButton
+@onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
 
 func _ready():
 	# Basic popup setup
@@ -10,16 +10,6 @@ func _ready():
 	self.size = Vector2(450, 300)
 	
 	# Style the panel
-	apply_panel_style()
-	
-	# Connect close button
-	if close_button:
-		close_button.pressed.connect(_on_close_button_pressed)
-	
-	# Add sample feed content
-	setup_feed_container()
-
-func apply_panel_style():
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.2, 0.2, 0.2)  # Dark gray
 	style.corner_radius_top_left = 24
@@ -31,68 +21,68 @@ func apply_panel_style():
 	style.border_width_right = 2
 	style.border_width_bottom = 2
 	style.border_color = Color.hex(0x202020FF)
-	self.add_theme_stylebox_override("panel", style)
-
-func setup_feed_container():
-	if not feed_content:
-		print("Feed content not found!")
-		return
-		
-	# Create a white card for the feed update
-	var update_panel = PanelContainer.new()
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(1, 1, 1, 1)  # White
-	panel_style.corner_radius_top_left = 15
-	panel_style.corner_radius_top_right = 15
-	panel_style.corner_radius_bottom_left = 15
-	panel_style.corner_radius_bottom_right = 15
-	panel_style.border_width_left = 2
-	panel_style.border_width_top = 2
-	panel_style.border_width_right = 2
-	panel_style.border_width_bottom = 2
-	panel_style.border_color = Color.hex(0x202020FF)
-	update_panel.add_theme_stylebox_override("panel", panel_style)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 16
+	style.content_margin_bottom = 16
+	add_theme_stylebox_override("panel", style)
 	
-	# Add sample feed update content
-	var content = RichTextLabel.new()
-	content.text = "[b]Feed Update![/b]\n@CdParker And did you see what her date was wearing? Barf. Literally. On myself... it was gross.\n\n[right][color=#FF4040]-375,000 fans[/color][/right]"
-	content.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	content.add_theme_constant_override("line_spacing", 5)
-	content.bbcode_enabled = true
+	# Connect close button
+	if close_button:
+		close_button.pressed.connect(_on_close_button_pressed)
 	
-	update_panel.add_child(content)
-	feed_content.add_child(update_panel)
+	# Add initial feed item
+	add_new_update("@CdParker And did you see what her date was wearing? Barf. Literally. On myself... it was gross.", -375000)
 
 func _on_close_button_pressed():
-	self.hide()
+	hide()
 
-# Add this function to handle new updates
 func add_new_update(message: String, follower_change: int):
 	if not feed_content:
 		print("Feed content not found!")
 		return
-		
-	# Create a white card for the feed update
-	var update_panel = PanelContainer.new()
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(1, 1, 1, 1)  # White
-	panel_style.corner_radius_top_left = 15
-	panel_style.corner_radius_top_right = 15
-	panel_style.corner_radius_bottom_left = 15
-	panel_style.corner_radius_bottom_right = 15
-	panel_style.border_width_left = 2
-	panel_style.border_width_top = 2
-	panel_style.border_width_right = 2
-	panel_style.border_width_bottom = 2
-	panel_style.border_color = Color.hex(0x202020FF)
-	update_panel.add_theme_stylebox_override("panel", panel_style)
 	
-	# Add new feed update content
-	var content = RichTextLabel.new()
-	content.text = "[b]Feed Update![/b]\n" + message + "\n\n[right][color=#FF4040]" + str(follower_change) + " fans[/color][/right]"
+	# Create the white card background
+	var card = PanelContainer.new()
+	var card_style = StyleBoxFlat.new()
+	card_style.bg_color = Color(1, 1, 1, 1)  # White
+	card_style.corner_radius_top_left = 15
+	card_style.corner_radius_top_right = 15
+	card_style.corner_radius_bottom_left = 15
+	card_style.corner_radius_bottom_right = 15
+	card_style.content_margin_left = 20
+	card_style.content_margin_right = 20
+	card_style.content_margin_top = 15
+	card_style.content_margin_bottom = 15
+	card.add_theme_stylebox_override("panel", card_style)
+	
+	# Message container
+	var message_container = VBoxContainer.new()
+	message_container.custom_minimum_size = Vector2(350, 0)  # Set minimum width
+	message_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	message_container.add_theme_constant_override("separation", 10)
+	
+	# Add title "Feed Update!" in bold
+	var title_label = Label.new()
+	title_label.text = "Feed Update!"
+	title_label.add_theme_font_size_override("font_size", 16)
+	title_label.add_theme_color_override("font_color", Color(0, 0, 0))  # Black text
+	message_container.add_child(title_label)
+	
+	# Add the message content
+	var content = Label.new()
+	content.text = message
 	content.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	content.add_theme_constant_override("line_spacing", 5)
-	content.bbcode_enabled = true
+	content.add_theme_color_override("font_color", Color(0, 0, 0))  # Black text
+	message_container.add_child(content)
 	
-	update_panel.add_child(content)
-	feed_content.add_child(update_panel)
+	# Add follower change at the bottom right
+	var follower_text = Label.new()
+	follower_text.text = str(follower_change) + " fans"
+	follower_text.add_theme_color_override("font_color", Color(1, 0, 0, 1))  # Red color
+	follower_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	message_container.add_child(follower_text)
+	
+	# Add everything together
+	card.add_child(message_container)
+	feed_content.add_child(card)
