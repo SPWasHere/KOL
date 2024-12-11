@@ -1,0 +1,27 @@
+extends Node
+
+# Base stats
+var current_energy = 100
+var max_energy = 100
+var weth = 0.0
+var fatrat = 0
+var current_level = 1
+
+# Energy regen
+var energy_timer = 0
+var energy_regen_rate = 300
+
+# Get node references
+@onready var energy_label = $Container/MarginContainer/PanelContainer/HBoxContainer/StatsContainer/PanelContainer/EnergyDisplay/Amount
+@onready var weth_label = $Container/MarginContainer/PanelContainer/HBoxContainer/StatsContainer/PanelContainer2/WETHDisplay/Amount
+@onready var fatrat_label = $Container/MarginContainer/PanelContainer/HBoxContainer/StatsContainer/PanelContainer3/FATRATDisplay/Amount
+@onready var level_label = $Container/MarginContainer/PanelContainer/HBoxContainer/PanelContainer/LevelContainer/LevelLabel
+
+func _ready():
+	update_all_displays()
+
+func update_all_displays():
+	energy_label.text = str(current_energy) + "/" + str(max_energy)
+	weth_label.text = "%.4f" % weth
+	fatrat_label.text = str(fatrat)
+	level_label.text = "Level " + str(current_level)
