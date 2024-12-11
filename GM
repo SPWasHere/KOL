@@ -4,7 +4,7 @@ extends PopupPanel
 var tasks = [
 	{"name": "Use the bus stop to travel to Beverly Hills", "progress": 0, "total": 1, "reward": {"money": 12, "fans": 6}},
 	{"name": "Go to the Metropolitan Magazine building", "progress": 0, "total": 1, "reward": {"money": 8, "fans": 4}},
-	{"name": "Follow @CryptoWhale on Twitter", "progress": 0, "total": 1, "reward": {"money": 5, "fans": 3}},
+	{"name": "Follow @ByWassies on Twitter", "progress": 0, "total": 1, "reward": {"money": 5, "fans": 3}},
 	{"name": "Join Discord community", "progress": 0, "total": 1, "reward": {"money": 10, "fans": 4}},
 	{"name": "Complete your first trade", "progress": 0, "total": 1, "reward": {"money": 20, "fans": 10}},
 	{"name": "Post your progress on Instagram", "progress": 0, "total": 1, "reward": {"money": 15, "fans": 5}},
