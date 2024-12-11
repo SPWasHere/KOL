@@ -1,0 +1,45 @@
+extends PopupPanel
+
+func _ready():
+	# Basic popup setup
+	set_exclusive(true)
+	var viewport = get_viewport()
+	if viewport:
+		size = Vector2(400, 300)
+		position = Vector2(710, 210)
+	popup_window = true
+
+	# Style the panel
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color("ffffff")
+	style.corner_radius_top_left = 20
+	style.corner_radius_top_right = 20
+	style.corner_radius_bottom_left = 20
+	style.corner_radius_bottom_right = 20
+	style.shadow_size = 4
+	style.shadow_color = Color(0, 0, 0, 0.25)
+	add_theme_stylebox_override("panel", style)
+
+	# Connect close button
+	var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
+	if close_button:
+		close_button.pressed.connect(_on_close_button_pressed)
+
+	# Initial feed setup
+	setup_feed()
+
+func setup_feed():
+	var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/Feed_Content
+	if feed_content:
+		feed_content.text = "Feed Update!\n@CdParker And did you see what her date was wearing? Barf. Literally. On myself... it was gross.\n\n-375,000 fans"
+		feed_content.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+func _on_close_button_pressed():
+	hide()
+
+# Function to add new feed updates
+func add_new_update(message: String, follower_change: int):
+	var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/Feed_Content
+	if feed_content:
+		var update_text = "Feed Update!\n" + message + "\n\n" + str(follower_change) + " fans"
+		feed_content.text = update_text
