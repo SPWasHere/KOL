@@ -5,7 +5,7 @@ extends PopupPanel
 var main_node: Node = null
 
 func _ready():
-	main_node = get_tree().get_root().get_node("Main")  # Adjust "Main" if your root node has a different name
+	main_node = get_tree().get_root().get_child(0)  # Adjust "Main" if your root node has a different name
 	# Set modal size and position
 	$VBoxContainer.custom_minimum_size = Vector2(450, 300)  # Fixed modal size
 	$VBoxContainer.set("custom_constants/separation", 16)  # Proper spacing
