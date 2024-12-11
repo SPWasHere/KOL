@@ -1,0 +1,95 @@
+extends PopupPanel
+
+# Variables to track task progress
+var current_tasks: int = 0
+var total_tasks: int = 2
+
+func _ready():
+	# Your existing popup setup code
+	set_exclusive(true)
+	var viewport = get_viewport()
+	if viewport:
+		var viewport_size = viewport.get_visible_rect().size
+		size = Vector2(400, 300)
+		position = Vector2(710, 210)
+	popup_window = true
+
+	# Add custom styling to match the game's aesthetic
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color("ffffff")  # White background
+	style.corner_radius_top_left = 15
+	style.corner_radius_top_right = 15
+	style.corner_radius_bottom_left = 15
+	style.corner_radius_bottom_right = 15
+	style.shadow_size = 4
+	style.shadow_color = Color(0, 0, 0, 0.25)
+	add_theme_stylebox_override("panel", style)
+
+	# Set up the initial tasks
+	setup_initial_tasks()
+	update_progress_counter()
+
+	# Connect the close button signal
+	if $VBoxContainer/MarginContainer/HBoxContainer/Control/CloseButton:
+		$VBoxContainer/MarginContainer/HBoxContainer/Control/CloseButton.pressed.connect(_on_close_button_pressed)
+
+func setup_initial_tasks():
+	# Get reference to the tasks container
+	var tasks_container = $ScrollContainer/VBoxContainer/PanelContainer/VBoxContainer
+	
+	# Clear any existing tasks
+	for child in tasks_container.get_children():
+		child.queue_free()
+	
+	# Add the two tasks from the screenshot
+	add_task("Use the bus stop to travel to Beverly Hills")
+	add_task("Go to the Metropolitan Magazine building", 12, 6)  # 12 WETH, 6 XP
+
+func add_task(task_description: String, weth_reward: int = 0, xp_reward: int = 0):
+	var tasks_container = $ScrollContainer/VBoxContainer/PanelContainer/VBoxContainer
+	
+	# Create a new HBoxContainer for the task
+	var task_container = HBoxContainer.new()
+	task_container.custom_minimum_size.y = 40  # Ensure consistent height
+	
+	# Create and setup the task description label
+	var description_label = Label.new()
+	description_label.text = task_description
+	description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	description_label.custom_minimum_size.x = 280  # Give enough room for text
+	task_container.add_child(description_label)
+	
+	# If there are rewards, add them
+	if weth_reward > 0 or xp_reward > 0:
+		var rewards_container = HBoxContainer.new()
+		
+		if weth_reward > 0:
+			var weth_label = Label.new()
+			weth_label.text = "+%d" % weth_reward
+			weth_label.add_theme_color_override("font_color", Color("4CAF50"))  # Green color
+			rewards_container.add_child(weth_label)
+			
+		if xp_reward > 0:
+			var xp_label = Label.new()
+			xp_label.text = "+%d" % xp_reward
+			xp_label.add_theme_color_override("font_color", Color("FFA726"))  # Orange color
+			rewards_container.add_child(xp_label)
+			
+		task_container.add_child(rewards_container)
+	
+	# Add the completed task to the container
+	tasks_container.add_child(task_container)
+
+func update_progress_counter():
+	# Update the progress counter at the top of the modal
+	var progress_label = $VBoxContainer/MarginContainer/HBoxContainer/Label
+	if progress_label:
+		progress_label.text = "%d/%d" % [current_tasks, total_tasks]
+
+func _on_close_button_pressed():
+	hide()
+
+# Call this function when a task is completed
+func complete_task():
+	current_tasks = min(current_tasks + 1, total_tasks)
+	update_progress_counter()
