@@ -1,0 +1,99 @@
+extends PopupPanel
+
+# Define the list of tasks
+var tasks = [
+	{"name": "Use the bus stop to travel to Beverly Hills", "progress": 0, "total": 1, "reward": {"money": 12, "fans": 6}},
+	{"name": "Go to the Metropolitan Magazine building", "progress": 0, "total": 1, "reward": {"money": 8, "fans": 4}},
+	{"name": "Follow @CryptoWhale on Twitter", "progress": 0, "total": 1, "reward": {"money": 5, "fans": 3}},
+	{"name": "Join Discord community", "progress": 0, "total": 1, "reward": {"money": 10, "fans": 4}},
+	{"name": "Complete your first trade", "progress": 0, "total": 1, "reward": {"money": 20, "fans": 10}},
+	{"name": "Post your progress on Instagram", "progress": 0, "total": 1, "reward": {"money": 15, "fans": 5}},
+	{"name": "Collaborate with an influencer", "progress": 0, "total": 1, "reward": {"money": 18, "fans": 8}},
+	{"name": "Organize a crypto meetup", "progress": 0, "total": 1, "reward": {"money": 25, "fans": 12}}
+]
+
+# Called when the node enters the scene
+func _ready():
+	# Set the modal position and enforce a fixed size
+	position = Vector2(670, 220)
+
+	# Populate the modal with tasks
+	populate_tasks()
+
+	# Ensure the modal is visible
+	show()
+
+func create_task_item(task_data: Dictionary) -> PanelContainer:
+	# Create a base PanelContainer for the task card
+	var task_card = PanelContainer.new()
+	task_card.set_custom_minimum_size(Vector2(350, 60))  # Adjust the task card size
+	task_card.add_theme_stylebox_override("panel", create_task_style())
+
+	# Create a VBoxContainer to hold task details inside the card
+	var task_content = VBoxContainer.new()
+	task_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	task_content.size_flags_vertical = Control.SIZE_FILL
+	task_content.custom_minimum_size = Vector2(0, 0)  # Reset unnecessary padding
+	task_card.add_child(task_content)
+
+	# Task description label
+	var task_label = Label.new()
+	task_label.text = task_data["name"]
+	task_label.add_theme_color_override("font_color", Color(0, 0, 0))  # Black font
+	task_content.add_child(task_label)
+
+	# Progress bar
+	var progress_bar = ProgressBar.new()
+	progress_bar.max_value = task_data["total"]
+	progress_bar.value = task_data["progress"]
+	progress_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL  # Allow it to stretch horizontally
+	progress_bar.size_flags_vertical = Control.SIZE_FILL
+	progress_bar.custom_minimum_size = Vector2(0, 10)  # Adjust the height if necessary
+	task_content.add_child(progress_bar)
+
+	# Rewards label
+	if "reward" in task_data:
+		var reward_label = Label.new()
+		reward_label.text = "Reward: 💵 " + str(task_data["reward"]["money"]) + ", 👥 " + str(task_data["reward"]["fans"])
+		reward_label.add_theme_color_override("font_color", Color(0, 0, 0))  # Black font
+		reward_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		reward_label.size_flags_vertical = Control.SIZE_FILL
+		task_content.add_child(reward_label)
+
+	return task_card
+
+# Dynamically populate tasks in the modal
+func populate_tasks():
+	var tasks_container = $VBoxContainer/ScrollContainer/VBoxContainer2
+	if tasks_container == null:
+		print("Error: Tasks container not found!")
+		return
+
+	# Clear existing tasks
+	for child in tasks_container.get_children():
+		if child is Node:
+			tasks_container.remove_child(child)
+			child.queue_free()
+
+	# Set spacing between task cards
+	tasks_container.set("custom_constants/separation", 10)  # Add spacing between cards
+
+	# Loop through the task data
+	for task_data in tasks:
+		var task_item = create_task_item(task_data)
+		if task_item:
+			tasks_container.add_child(task_item)
+
+# Helper function to create a stylebox for the task card
+func create_task_style() -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(1, 1, 1)  # White background
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	return style
