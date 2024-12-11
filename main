@@ -1,0 +1,26 @@
+# main.gd
+extends Node
+
+@onready var bottom_bar = $CanvasLayer/Control2/bottom_bar
+@onready var popup_panel = $CanvasLayer/Control3/PopupPanel
+
+func _ready():
+	print("ModalOverlay found: ", has_node("CanvasLayer/Control3"))
+	print("PopupPanel found: ", has_node("CanvasLayer/Control3/PopupPanel"))
+	
+	# Connect bottom bar signals
+	bottom_bar.open_feed_modal.connect(_on_open_feed_modal)
+	bottom_bar.open_goals_modal.connect(_on_open_goals_modal)
+
+func _on_open_feed_modal():
+	print("Feed modal requested")
+	# We'll add Feed modal content later
+	# popup_panel.popup()  # Commented out so Feed button doesn't show modal
+
+func _on_open_goals_modal():
+	print("Goals modal requested")
+	if popup_panel:
+		popup_panel.popup()
+		print("Showing popup")
+	else:
+		print("Cannot show popup - reference not found")
