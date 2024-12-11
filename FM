@@ -1,84 +1,54 @@
 extends PopupPanel
 
 func _ready():
-	# Basic popup setup
-	set_exclusive(true)
-	var viewport = get_viewport()
-	if viewport:
-		size = Vector2(400, 300)
-		position = Vector2(710, 210)
-	popup_window = true
+	# Set modal styles
+	setup_styles()
 
-	# Style the main PopupPanel with dark background like Goals modal
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color.hex(0x333333FF)  # Dark gray background
-	style.corner_radius_top_left = 20
-	style.corner_radius_top_right = 20
-	style.corner_radius_bottom_left = 20
-	style.corner_radius_bottom_right = 20
-	style.shadow_size = 4
-	style.shadow_color = Color(0, 0, 0, 0.25)
-	add_theme_stylebox_override("panel", style)
+	# Find and validate required nodes
+	var feed_content = $ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
+	if not feed_content:
+		print("Error: FeedContent node not found!")
+	else:
+		print("FeedContent found.")
 
-	# Set the "Feed" label to white color
-	var title_label = $VBoxContainer/MarginContainer/HBoxContainer/Feed
-	if title_label:
-		title_label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-
-	# Connect close button
-	var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/Control/CloseButton
+	# Connect close button functionality
+	var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)
+	else:
+		print("Error: CloseButton node not found!")
 
-	# Style the feed content container with white background
+	# Set up feed container
 	setup_feed_container()
 
+func setup_styles():
+	# Style the main PopupPanel
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.2, 0.2, 0.2)  # Dark gray
+	style.corner_radius_top_left = 10
+	style.corner_radius_top_right = 10
+	style.corner_radius_bottom_left = 10
+	style.corner_radius_bottom_right = 10
+	add_theme_stylebox_override("panel", style)
+
 func setup_feed_container():
-	var feed_container = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer
+	var feed_container = $ScrollContainer/VBoxContainer/HBoxContainer
 	if feed_container:
-		# Create white card style
-		var feed_style = StyleBoxFlat.new()
-		feed_style.bg_color = Color(1, 1, 1, 1)  # White background
-		feed_style.corner_radius_top_left = 15
-		feed_style.corner_radius_top_right = 15
-		feed_style.corner_radius_bottom_left = 15
-		feed_style.corner_radius_bottom_right = 15
-		feed_style.content_margin_left = 15
-		feed_style.content_margin_right = 15
-		feed_style.content_margin_top = 10
-		feed_style.content_margin_bottom = 10
-		
-		# Create a PanelContainer for the white card
-		var panel = PanelContainer.new()
-		panel.add_theme_stylebox_override("panel", feed_style)
-		
-		# Move the Feed Content label into the white card
-		var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/Feed_Content
-		if feed_content:
-			feed_content.get_parent().remove_child(feed_content)
-			panel.add_child(feed_content)
-			feed_container.add_child(panel)
-			
-			# Add initial feed content
-			setup_feed()
-
-func setup_feed():
-	var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/Feed_Content
-	if feed_content:
-		var text = "[b]Feed Update![/b]\n"
-		text += "@CdParker And did you see what her date was wearing? Barf. Literally. On myself... it was gross.\n\n"
-		text += "[color=#FF4040]-375,000 fans[/color]"
-		feed_content.text = text
-		feed_content.bbcode_enabled = true
-
-func _on_close_button_pressed():
-	hide()
+		# Add initial feed content
+		add_new_update("Welcome to your feed!", 0)
+	else:
+		print("Error: Feed container node not found!")
 
 func add_new_update(message: String, follower_change: int):
-	var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer/Feed_Content
+	var feed_content = $ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
 	if feed_content:
 		var text = "[b]Feed Update![/b]\n"
 		text += message + "\n\n"
-		var color = "#FF4040" if follower_change < 0 else "#40FF40"  # Fixed ternary operator syntax
+		var color = "#FF4040" if follower_change < 0 else "#40FF40"
 		text += "[color=" + color + "]" + str(follower_change) + " fans[/color]"
 		feed_content.text = text
+	else:
+		print("Error: Cannot update feed. FeedContent node not found!")
+
+func _on_close_button_pressed():
+	hide()
