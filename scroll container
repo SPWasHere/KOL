@@ -1,0 +1,19 @@
+extends ScrollContainer
+
+func _ready():
+	print("Scroll container initialized")
+	var vbox = $MarginContainer/VBoxContainer
+	if vbox:
+		print("VBox height: ", vbox.size.y)
+		print("Scroll container height: ", size.y)
+
+func _input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			# Scroll up
+			self.scroll_vertical -= 30
+			print("Scrolling up, value: ", self.scroll_vertical)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			# Scroll down
+			self.scroll_vertical += 30
+			print("Scrolling down, value: ", self.scroll_vertical)
