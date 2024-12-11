@@ -1,0 +1,11 @@
+extends Button
+
+func _ready():
+	pressed.connect(_on_pressed)
+
+func _on_pressed():
+	# Get reference to popup panel and hide it
+	# Adjust "../../../.." based on how many levels up you need to go to reach PopupPanel
+	var popup = get_node("../../../..")
+	if popup is PopupPanel:
+		popup.hide()
