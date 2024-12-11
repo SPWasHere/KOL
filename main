@@ -28,7 +28,7 @@ func _on_open_feed_modal():
 			current_open_modal.hide()
 		# Show feed modal
 		feed_modal.show()
-		feed_modal.add_new_update("res://assets/SMOLLting.jpg", "I am ZekeXBT and I sense crime.. Thread soon", -375000)
+		feed_modal.add_new_update("res://assets/SMOLLting.png", "I am ZekeXBT and I sense crime.. Thread soon", -375000)
 		current_open_modal = feed_modal
 
 func _on_open_goals_modal():
