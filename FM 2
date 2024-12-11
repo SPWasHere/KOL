@@ -4,9 +4,10 @@ extends PopupPanel
 @onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
 
 func _ready():
-	# Enforce modal size
-	$VBoxContainer.custom_minimum_size = Vector2(450, 300)
-	self.position = Vector2(560, 200)
+	# Set modal size and position
+	$VBoxContainer.set("custom_constants/separation", 16)  # Proper spacing
+	$VBoxContainer.custom_minimum_size = Vector2(450, 300)  # Fixed modal size
+	self.position = Vector2(560, 200)  # Center position
 
 	# Style the panel
 	var style = StyleBoxFlat.new()
@@ -30,7 +31,7 @@ func _ready():
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)
 
-	# Add initial feed item
+	# Add an initial feed update
 	add_new_update("res://assets/avatar_placeholder.jpg", "I am ZekeXBT and I sense crime... Thread soon.", -375000)
 
 func _on_close_button_pressed():
@@ -61,17 +62,11 @@ func add_new_update(avatar_path: String, message: String, follower_change: int):
 	content_box.add_theme_constant_override("separation", 10)
 
 	# Add avatar with fixed size
-	var avatar_container = MarginContainer.new()
-	avatar_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	avatar_container.add_theme_constant_override("margin_left", 5)
-	avatar_container.add_theme_constant_override("margin_right", 10)
-
 	var avatar = TextureRect.new()
 	avatar.texture = load(avatar_path)
-	avatar.custom_minimum_size = Vector2(64, 64)  # Fixed avatar size
+	avatar.custom_minimum_size = Vector2(24, 24)  # Fixed avatar size
 	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	avatar_container.add_child(avatar)
-	content_box.add_child(avatar_container)
+	content_box.add_child(avatar)
 
 	# Create a VBoxContainer for the text content
 	var message_box = VBoxContainer.new()
