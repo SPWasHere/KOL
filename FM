@@ -1,54 +1,76 @@
 extends PopupPanel
 
+@onready var feed_content = $ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
+@onready var close_button = $MarginContainer/HBoxContainerFM/CloseButton
+
 func _ready():
-	# Set modal styles
-	setup_styles()
+	# Ensure popup is configured correctly
+	self.set_exclusive(true)
+	self.position = Vector2(560, 200)
+	self.size = Vector2(450, 300)
 
-	# Find and validate required nodes
-	var feed_content = $ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
-	if not feed_content:
-		print("Error: FeedContent node not found!")
-	else:
-		print("FeedContent found.")
+	# Style the panel
+	apply_panel_style()
 
-	# Connect close button functionality
-	var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
+	# Connect close button
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)
-	else:
-		print("Error: CloseButton node not found!")
 
-	# Set up feed container
+	# Populate initial feed
 	setup_feed_container()
+	add_new_update("Welcome to the feed!", 100)
 
-func setup_styles():
-	# Style the main PopupPanel
+func apply_panel_style():
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.2, 0.2, 0.2)  # Dark gray
-	style.corner_radius_top_left = 10
-	style.corner_radius_top_right = 10
-	style.corner_radius_bottom_left = 10
-	style.corner_radius_bottom_right = 10
-	add_theme_stylebox_override("panel", style)
+	style.corner_radius_top_left = 24
+	style.corner_radius_top_right = 24
+	style.corner_radius_bottom_left = 24
+	style.corner_radius_bottom_right = 24
+	style.shadow_size = 4
+	style.shadow_color = Color(0, 0, 0, 0.25)
+	self.add_theme_stylebox_override("panel", style)
 
 func setup_feed_container():
-	var feed_container = $ScrollContainer/VBoxContainer/HBoxContainer
-	if feed_container:
-		# Add initial feed content
-		add_new_update("Welcome to your feed!", 0)
-	else:
-		print("Error: Feed container node not found!")
+	if not feed_content:
+		print("Error: FeedContent node not found!")
+		return
+
+	# Clear previous feed content
+	for child in feed_content.get_children():
+		child.queue_free()
+
+	# Initialize with an example feed update
+	add_new_update("Feed Initialized Successfully!", 0)
 
 func add_new_update(message: String, follower_change: int):
-	var feed_content = $ScrollContainer/VBoxContainer/HBoxContainer/FeedContent
-	if feed_content:
-		var text = "[b]Feed Update![/b]\n"
-		text += message + "\n\n"
-		var color = "#FF4040" if follower_change < 0 else "#40FF40"
-		text += "[color=" + color + "]" + str(follower_change) + " fans[/color]"
-		feed_content.text = text
-	else:
-		print("Error: Cannot update feed. FeedContent node not found!")
+	if not feed_content:
+		print("Error: Cannot update feed. FeedContent not found!")
+		return
+
+	var feed_item = HBoxContainer.new()
+
+	# Add icon (e.g., avatar)
+	var icon = TextureRect.new()
+	icon.texture = load("res://assets/avatar_placeholder.png")  # Replace with your asset
+	icon.rect_min_size = Vector2(48, 48)
+	feed_item.add_child(icon)
+
+	# Add message label
+	var message_label = Label.new()
+	message_label.text = message
+	message_label.add_theme_color_override("font_color", Color(1, 1, 1))  # White font
+	feed_item.add_child(message_label)
+
+	# Add follower change label
+	var follower_label = Label.new()
+	var color = Color(0, 1, 0) if follower_change >= 0 else Color(1, 0, 0)
+	follower_label.text = str(follower_change) + " fans"
+	follower_label.add_theme_color_override("font_color", color)
+	feed_item.add_child(follower_label)
+
+	# Add to feed content
+	feed_content.add_child(feed_item)
 
 func _on_close_button_pressed():
-	hide()
+	self.hide()
