@@ -2,8 +2,10 @@ extends PopupPanel
 
 @onready var feed_content = $VBoxContainer/ScrollContainer/VBoxContainer
 @onready var close_button = $VBoxContainer/MarginContainer/HBoxContainerFM/CloseButton
+var main_node: Node = null
 
 func _ready():
+	main_node = get_tree().get_root().get_node("Main")  # Adjust "Main" if your root node has a different name
 	# Set modal size and position
 	$VBoxContainer.custom_minimum_size = Vector2(450, 300)  # Fixed modal size
 	$VBoxContainer.set("custom_constants/separation", 16)  # Proper spacing
@@ -35,6 +37,8 @@ func _ready():
 	add_new_update("res://assets/SMOLLting.png", "I am ZekeXBT and I sense crime... Thread soon.", -375000)
 
 func _on_close_button_pressed():
+	if main_node:
+		main_node.current_open_modal = null
 	hide()
 
 func add_new_update(avatar_path: String, message: String, follower_change: int):
