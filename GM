@@ -2,7 +2,7 @@ extends PopupPanel
 
 # Define the list of tasks
 var tasks = [
-	{"name": "Use the bus stop to travel to Beverly Hills", "progress": 0, "total": 1, "reward": {"money": 12, "fans": 6}},
+	{"name": "Use the bus stop to travel to WcDonalds", "progress": 0, "total": 1, "reward": {"money": 12, "fans": 6}},
 	{"name": "Go to the Metropolitan Magazine building", "progress": 0, "total": 1, "reward": {"money": 8, "fans": 4}},
 	{"name": "Follow @ByWassies on Twitter", "progress": 0, "total": 1, "reward": {"money": 5, "fans": 3}},
 	{"name": "Join Discord community", "progress": 0, "total": 1, "reward": {"money": 10, "fans": 4}},
@@ -15,7 +15,7 @@ var tasks = [
 # Called when the node enters the scene
 func _ready():
 	# Set the modal position and enforce a fixed size
-	position = Vector2(670, 220)
+	position = Vector2(650, 220)
 
 	# Populate the modal with tasks
 	populate_tasks()
