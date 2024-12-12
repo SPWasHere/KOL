@@ -9,7 +9,7 @@ func _ready():
 	# Set modal size and position
 	$VBoxContainer.custom_minimum_size = Vector2(450, 300)  # Fixed modal size
 	$VBoxContainer.set("custom_constants/separation", 16)  # Proper spacing
-	self.position = Vector2(560, 200)  # Center position
+	self.position = Vector2(530, 200)  # Center position
 
 	# Style the panel
 	var style = StyleBoxFlat.new()
