@@ -22,7 +22,7 @@ func _ready():
 # Add these new functions for clothing scene
 func _on_clothing_button_pressed():
 	# Hide bottom bar
-	bottom_bar.hide()
+	$CanvasLayer/Control2/bottom_bar.hide()
 	
 	# Instance and show clothing scene
 	var clothing_scene = preload("res://scenes/clothing_scene.tscn").instantiate()
@@ -33,7 +33,7 @@ func _on_exit_customization():
 	# Show bottom bar again
 	bottom_bar.show()
 	# Remove clothing scene
-	$CanvasLayer/ClothingScene.queue_free()
+	$CanvasLayer/Control2/bottom_bar.show()
 
 func _on_open_feed_modal():
 	print("Feed modal requested")
