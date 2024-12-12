@@ -1,5 +1,8 @@
 extends Control
 
+# Declare the signal
+signal on_exit_customization
+
 # This script manages the whole clothing scene
 func _ready():
 	setup_ui()
@@ -29,12 +32,13 @@ func load_items():
 	create_item_grid("BODY", body_items)
 
 func create_item_grid(category: String, items: Array):
-	var grid = $RightSection/CustomizePanel/TabContainer.get_node(category)
-	
-	for item in items:
-		var item_display = preload("res://scenes/ui/clothing_item_display.tscn").instantiate()
-		item_display.setup(item)
-		grid.add_child(item_display)
+	# Update this line to match your actual node path
+	var grid = $RightSection/CustomizePanel/MarginContainer/TabContainer.get_node(category)
+	if grid:
+		for item in items:
+			var item_display = preload("res://scenes/ui/clothing_item_display.tscn").instantiate()
+			item_display.setup(item)
+			grid.add_child(item_display)
 
 func _on_close_button_pressed():
 	emit_signal("on_exit_customization")
