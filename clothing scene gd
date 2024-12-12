@@ -1,0 +1,45 @@
+extends Control
+
+# This script manages the whole clothing scene
+func _ready():
+	setup_ui()
+	load_items()  # Loads all clothing items
+
+func setup_ui():
+	# Sets up the whole scene layout
+	# Handles the Done button
+	$DoneButton.pressed.connect(_on_done_button_pressed)
+	# Handles the Close button
+	$RightSection/CustomizePanel/TitleBar/CloseButton.pressed.connect(_on_close_button_pressed)
+
+func load_items():
+	# This is where we'll load and display clothing items
+	var head_items = [
+		{"texture_path": "res://assets/helmet.png", "price": 100, "currency_type": "ETH", "is_new": true},
+		{"texture_path": "res://assets/hat.png", "price": 50, "currency_type": "FATRAT", "is_new": false}
+	]
+	
+	var body_items = [
+		{"texture_path": "res://assets/tshirt.png", "price": 75, "currency_type": "ETH", "is_new": false},
+		{"texture_path": "res://assets/jacket.png", "price": 200, "currency_type": "FATRAT", "is_new": true}
+	]
+	
+	# Load items into grids
+	create_item_grid("HEAD", head_items)
+	create_item_grid("BODY", body_items)
+
+func create_item_grid(category: String, items: Array):
+	var grid = $RightSection/CustomizePanel/TabContainer.get_node(category)
+	
+	for item in items:
+		var item_display = preload("res://scenes/ui/clothing_item_display.tscn").instantiate()
+		item_display.setup(item)
+		grid.add_child(item_display)
+
+func _on_close_button_pressed():
+	emit_signal("on_exit_customization")
+	queue_free()  # This removes the clothing scene
+
+func _on_done_button_pressed():
+	emit_signal("on_exit_customization")
+	queue_free()
