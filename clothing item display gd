@@ -1,0 +1,11 @@
+# clothing_item_display.gd
+extends Panel
+
+# This script manages just ONE clothing item box
+func setup(data: Dictionary):
+	# Sets up ONE item's:
+	# - Image
+	# - Price
+	# - New indicator (!)
+	# - Click handling
+	pass
